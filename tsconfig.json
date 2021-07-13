@@ -12,6 +12,7 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
+      "element-plus",
       "webpack-env"
     ],
     "paths": {
