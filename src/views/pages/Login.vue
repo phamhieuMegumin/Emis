@@ -76,7 +76,7 @@
             </el-form>
             <!-- Kết thúc input UserName -->
             <div class="row">
-              <el-button class="btn--gradient">Đăng nhập</el-button>
+              <el-button class="btn--gradient btn-100">Đăng nhập</el-button>
             </div>
           </div>
           <!-- Kết thúc form input -->

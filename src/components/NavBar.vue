@@ -116,6 +116,7 @@ export default defineComponent({
   margin-right: 8px;
   filter: grayscale(100%);
 }
+
 .link-active > a {
   border-bottom: 2px solid #8a6bf6;
 }

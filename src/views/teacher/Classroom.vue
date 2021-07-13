@@ -12,7 +12,11 @@
     <!-- Kết thúc header -->
     <!-- Bắt đầu danh sách lớp học -->
     <div class="class-list-container">
-      <card-item v-for="(item, index) in [1, 2, 3, 4, 5]" :key="index" />
+      <card-item
+        @changeInfo="changeInfo"
+        v-for="(item, index) in [1, 2, 3, 4, 5]"
+        :key="index"
+      />
     </div>
     <!-- Kết thúc danh sách lớp học -->
   </div>
@@ -22,9 +26,17 @@
     v-model="dialogVisible"
     width="668px"
     :before-close="handleClose"
+    :close-on-click-modal="false"
+    @closed="handleCloseDialog"
+    :destroy-on-close="true"
   >
     <!-- Bắt đầu Dialog main -->
-    <form class="dialog-form">
+    <el-form
+      :model="classInfo"
+      :rules="rules"
+      ref="ruleForm"
+      class="dialog-form"
+    >
       <div class="container">
         <div class="dialog-content">
           <div class="content-left">
@@ -39,7 +51,7 @@
             <!-- Băt đầu input khối -->
             <div class="input-container">
               <label>Khối</label>
-              <el-form-item>
+              <el-form-item prop="grade">
                 <el-select
                   v-model="classInfo.grade"
                   filterable
@@ -59,7 +71,7 @@
             <!-- Bắt đầu bộ môn -->
             <div class="input-container">
               <label>Bộ môn</label>
-              <el-form-item>
+              <el-form-item prop="subject">
                 <el-select
                   v-model="classInfo.subject"
                   filterable
@@ -81,7 +93,7 @@
           <!-- Bắt đầu tên lớp -->
           <div class="input-container">
             <label>Tên lớp <span class="required">*</span></label>
-            <el-form-item>
+            <el-form-item prop="className">
               <el-input
                 placeholder="Khối - Môn"
                 v-model="classInfo.className"
@@ -105,14 +117,12 @@
           <!-- Kết thúc phần mô tả -->
         </div>
       </div>
-    </form>
+    </el-form>
     <!-- Kết thúc dailog main -->
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">Đóng</el-button>
-        <el-button
-          class="btn--gradient btn-group-left"
-          @click="dialogVisible = false"
+        <el-button class="btn--gradient btn-group-left" @click="handleSave"
           >Lưu</el-button
         >
       </span>
@@ -137,6 +147,34 @@ export default defineComponent({
       subject: [],
       className: "",
       description: "",
+    });
+    const ruleForm = ref(null);
+    /**
+     *  Quy chuẩn kiểm tra form
+     * CreatedBy : PQHieu(13/07/2021)
+     */
+    const rules = reactive({
+      grade: [
+        {
+          required: true,
+          message: "Không được để trống",
+          trigger: "blur",
+        },
+      ],
+      subject: [
+        {
+          required: true,
+          message: "Không được để trống",
+          trigger: "blur",
+        },
+      ],
+      className: [
+        {
+          required: true,
+          message: "Không được để trống",
+          trigger: "blur",
+        },
+      ],
     });
     /**
      * Mẫu thử option
@@ -169,29 +207,106 @@ export default defineComponent({
         label: "Hóa",
       },
     ]);
+    /**
+     * Ẩn hiện dialog nhập
+     * CreatedBy : PQHieu(13/07/2021)
+     */
     const dialogVisible = ref(false);
+
+    // /**
+    //  * Theo dõi giá trị của khối và bộ môn để thay đổi giá trị tên lớp
+    //  * CreatedBy : PQhieu(13/07/2021)
+    //  */
+    // watchEffect(() => {
+    //   if (classInfo.grade) classInfo.className += "Khối " + classInfo.grade;
+    // });
+    // watchEffect(() => {
+    //   if (classInfo.subject.length > 0) {
+    //     classInfo.className += "," + subjectName.value;
+    //   }
+    // });
+
+    /**
+     * Thực hiện thay đổi thông tin lớp học
+     * CreatedBy : PQHieu(13/07/2021)
+     */
+    const changeInfo = () => {
+      dialogVisible.value = true;
+    };
+
+    /**
+     * Thực hiện xác nhận khi đóng dialog
+     * CreatedBy : PQHieu(13/07/2021)
+     */
 
     const handleClose = (done: any) => {
       ElMessageBox.confirm("Bạn có muốn lưu trước khi rời đi không?", {
         title: "EMIS Ôn tập",
         showClose: false,
         dangerouslyUseHTMLString: true,
-
-        showCancelButton: true,
-        showConfirmButton: true,
+        confirmButtonText: "Lưu",
+        cancelButtonText: "Hủy",
+        closeOnClickModal: false,
+        confirmButtonClass: "btn--gradient btn-group-left",
       })
         .then(() => {
-          done();
+          console.log("Done");
+          // done();
         })
-        .catch();
+        .catch(() => {
+          done();
+        });
     };
+    /**
+     * Bắt sự kiện khi close dialog
+     * CreatedBy : PQHieu(13/07/2021)
+     */
+    const handleCloseDialog = () => {
+      // Thực hiện reset dialog
+      Object.assign(classInfo, {
+        grade: "",
+        subject: [],
+        className: "",
+        description: "",
+      });
+    };
+    /**
+     * Thực hiện lưu dữ liệu
+     */
+    const handleSave = () => {
+      ruleForm.value.validate((valid) => {
+        if (valid) {
+          // thực hiện khi check thành công
+          dialogVisible.value = false; // thực hiện đóng form
+        }
+      });
+    };
+
     return {
       dialogVisible,
       handleClose,
       classInfo,
       options,
       optionsSubject,
+      rules,
+      changeInfo,
+      handleCloseDialog,
+      ruleForm,
+      handleSave,
     };
+  },
+  methods: {
+    /**
+     * Thự hiện validate khi Submit
+     * CreatedBy : PQhieu(13/07/2021)
+     */
+    // handleSave() {
+    //   this.$refs.ruleForm.validate((valid: any) => {
+    //     if (valid) {
+    //       console.log("true");
+    //     }
+    //   });
+    // },
   },
 });
 </script>
@@ -279,9 +394,7 @@ export default defineComponent({
   margin-bottom: 2px;
   color: #4e5b6a;
 }
-.btn-group-left {
-  margin-left: 12px !important;
-}
+
 .required {
   color: red;
 }

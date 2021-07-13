@@ -102,7 +102,7 @@
           </el-form>
 
           <div class="row">
-            <el-button class="btn--gradient">Đăng ký</el-button>
+            <el-button class="btn--gradient btn-100">Đăng ký</el-button>
           </div>
         </div>
         <!-- Kết thúc form input -->

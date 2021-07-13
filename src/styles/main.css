@@ -36,6 +36,12 @@
   height: 40px;
   border-radius: 10px !important;
 }
+.btn-group-left {
+  margin-left: 12px !important;
+}
+.btn-100 {
+  width: 100%;
+}
 .btn--gradient {
   background: linear-gradient(45deg, #583fed, #953fed) !important;
   color: #fff !important;
@@ -119,4 +125,10 @@
 /* Select */
 .el-select {
   width: 100%;
+}
+.el-popper__arrow {
+  display: none;
+}
+.el-select__popper {
+  top: 238px !important;
 }

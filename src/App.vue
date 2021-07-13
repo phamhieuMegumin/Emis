@@ -1,5 +1,9 @@
 <template>
-  <router-view />
+  <router-view v-slot="{ Component }">
+    <transition name="fade">
+      <component :is="Component" />
+    </transition>
+  </router-view>
   <router-view name="classRoom" />
 </template>
 
@@ -27,6 +31,7 @@ export default {
 body {
   height: 100vh;
   overflow: hidden;
+  padding-right: 0 !important ;
 }
 ::-webkit-scrollbar {
   width: 6px;
@@ -38,5 +43,17 @@ body {
   background-color: #b6b9ce;
   border-radius: 2px;
   cursor: pointer;
+}
+.fade-enter-from {
+  opacity: 0;
+}
+.fade-enter-active {
+  transition: all 0.3s linear;
+}
+.fade-leave-to {
+  opacity: 1;
+}
+.fade-leave-active {
+  transition: all 0.2s linear;
 }
 </style>

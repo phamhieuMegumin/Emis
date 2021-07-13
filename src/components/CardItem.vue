@@ -25,29 +25,30 @@
           <!---->
         </div>
         <!-- Bắt đầu proper -->
-        <div class="button-more">
-          <el-popover
-            placement="left-start"
-            :width="200"
-            trigger="click"
-            :show-arrow="false"
-          >
-            <div class="popover-option-container">
-              <div class="option-item">
-                Chỉnh sửa thông tin lớp
-              </div>
-              <div class="option-item">Ngừng theo dõi</div>
-              <div class="option-item">Xóa lớp</div>
+
+        <el-popover
+          placement="left-start"
+          :width="200"
+          trigger="click"
+          :show-arrow="false"
+        >
+          <div class="popover-option-container">
+            <div class="option-item" @click="handleChangeinfo">
+              Chỉnh sửa thông tin lớp
             </div>
-            <template #reference>
+            <div class="option-item">Ngừng theo dõi</div>
+            <div class="option-item">Xóa lớp</div>
+          </div>
+          <template #reference>
+            <div class="button-more">
               <img
                 src="https://testqlthapp.misacdn.net/r/ontap/img/ic_AnswerMore.38ee007c.svg"
                 width="10"
                 height="20"
               />
-            </template>
-          </el-popover>
-        </div>
+            </div>
+          </template>
+        </el-popover>
         <!-- Kết thúc proper -->
       </div>
       <!-- Kết thúc phần thông tin card -->
@@ -56,11 +57,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
-  setup() {
-    return {};
+  setup(props, context) {
+    /**
+     * Bắt sự kiện thay đổi thông tin lớp học
+     * CreatedBy : PQhieu(13/07/2021)
+     */
+    const handleChangeinfo = () => {
+      context.emit("changeInfo");
+    };
+    return {
+      handleChangeinfo,
+    };
   },
 });
 </script>
