@@ -5,7 +5,7 @@
         <div class="logo">
           <img
             class="logo-image"
-            src="https://testqlthapp.misacdn.net/r/ontap/img/logo_login.3bba278e.svg"
+            src="https://testqlthapp.misacdn.net/r/ontap/img/logo_login.084a83c4.svg"
           />
           <div class="logo-title">Ôn tập</div>
         </div>
@@ -38,7 +38,7 @@
                 <el-form-item prop="username">
                   <el-input
                     placeholder="Nhập email hoặc số điện thoại"
-                    v-model="account.phoneNumberOrEmail"
+                    v-model="account.userName"
                     autocomplete="off"
                   >
                     <template #prefix>
@@ -76,7 +76,9 @@
             </el-form>
             <!-- Kết thúc input UserName -->
             <div class="row">
-              <el-button class="btn--gradient btn-100">Đăng nhập</el-button>
+              <el-button @click="handleSubmit" class="btn--gradient btn-100"
+                >Đăng nhập</el-button
+              >
             </div>
           </div>
           <!-- Kết thúc form input -->
@@ -111,17 +113,19 @@ import { defineComponent, reactive } from "vue";
 import { onBeforeRouteUpdate, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import Notification from "../../uses/Notification";
+import AuthManager from "../../uses/Auth";
 export default defineComponent({
   setup() {
     onBeforeRouteUpdate((vm) => {
       console.log(vm);
     });
     const { ErrorNotify } = Notification();
+    const { handleLogin } = AuthManager();
     const store = useStore();
     const router = useRouter();
     // Quy chuẩn kiểm tra form
     const rules = reactive({
-      phoneNumberOrEmail: [
+      userName: [
         {
           required: true,
           message: "Không được để trống",
@@ -141,27 +145,31 @@ export default defineComponent({
      * CreatedBy : PQHieu(12/07/2021)
      */
     const account = reactive({
-      phoneNumberOrEmail: "",
+      userName: "",
       password: "",
     });
+    /**
+     * Thực hiện đăng nhập
+     * CreatedBy : PQhieu(18/07/2021)
+     */
     const handleSubmit = () => {
-      login();
+      handleLogin(account);
     };
-    const login = async () => {
-      try {
-        const data = await axios({
-          method: "post",
-          url: "https://localhost:44308/api/v1/Users/Login",
-          data: account,
-        });
-        localStorage.setItem("JWT", data.data.token);
-        store.commit("CHANGE_AUTHENTICATION", data.data.userInfo);
-        router.push("/");
-      } catch (error) {
-        ErrorNotify();
-        console.log(error);
-      }
-    };
+    // const login = async () => {
+    //   try {
+    //     const data = await axios({
+    //       method: "post",
+    //       url: "https://localhost:44308/api/v1/Users/Login",
+    //       data: account,
+    //     });
+    //     localStorage.setItem("JWT", data.data.token);
+    //     store.commit("CHANGE_AUTHENTICATION", data.data.userInfo);
+    //     router.push("/");
+    //   } catch (error) {
+    //     ErrorNotify();
+    //     console.log(error);
+    //   }
+    // };
     return {
       account,
       handleSubmit,

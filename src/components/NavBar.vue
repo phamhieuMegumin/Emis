@@ -3,14 +3,14 @@
     <!-- Bắt đầu nav link -->
     <div class="nav-link">
       <div class="nav-link-item">
-        <router-link to="/teacher/classroom">
+        <router-link to="/">
           <img
             src="https://testqlthapp.misacdn.net/r/ontap/img/ic_chart.728bdf38.svg"
           />
           <div class="item-text">Tổng quan</div>
         </router-link>
       </div>
-      <div class="nav-link-item link-active">
+      <div class="nav-link-item">
         <router-link to="/teacher/classroom">
           <img
             src="https://testqlthapp.misacdn.net/r/ontap/img/ic_home.465f7016.svg"
@@ -19,7 +19,7 @@
         </router-link>
       </div>
       <div class="nav-link-item">
-        <router-link to="/teacher/classroom">
+        <router-link to="/">
           <img
             src="https://testqlthapp.misacdn.net/r/ontap/img/ic_multi.d199c255.svg"
           />
@@ -59,7 +59,9 @@
           <div class="expand-container">
             <div class="hello-message">
               <span class="hello">Xin chào, </span
-              ><span class="full-name">Phạm Quang Hiếu</span>
+              ><span class="full-name">{{
+                store.state.userInfo.fullName
+              }}</span>
             </div>
             <img
               class="image"
@@ -75,10 +77,14 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { useStore } from "vuex";
 
 export default defineComponent({
   setup() {
-    return {};
+    const store = useStore();
+    return {
+      store,
+    };
   },
 });
 </script>
@@ -116,19 +122,10 @@ export default defineComponent({
   margin-right: 8px;
   filter: grayscale(100%);
 }
-
-.link-active > a {
-  border-bottom: 2px solid #8a6bf6;
-}
 .item-text {
   font-weight: 700;
 }
-.link-active .item-text {
-  color: #8a6bf6;
-}
-.nav-link-item.link-active img {
-  filter: grayscale(0);
-}
+
 /* Bắt đàu header right */
 .header-right {
   position: absolute;
@@ -195,4 +192,14 @@ export default defineComponent({
   overflow: hidden;
 }
 /* Kết thúc header right */
+/* Css link */
+a.router-link-active {
+  border-bottom: 2px solid #8a6bf6;
+}
+a.router-link-active .item-text {
+  color: #8a6bf6;
+}
+a.router-link-active img {
+  filter: grayscale(0);
+}
 </style>

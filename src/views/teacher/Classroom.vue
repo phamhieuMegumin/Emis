@@ -115,10 +115,19 @@
             </el-input>
           </div>
           <!-- Kết thúc phần mô tả -->
+          <!-- Bắt đầu phần phê duyệt học sinh -->
+          <el-switch
+            v-model="classInfo.isapprove"
+            active-text="Bật phê duyệt học sinh vào lớp"
+            inactive-color="#b6b9ce"
+          >
+          </el-switch>
+          <!-- Kết thúc phê duyệt học sinh -->
         </div>
       </div>
     </el-form>
     <!-- Kết thúc dailog main -->
+
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">Đóng</el-button>
@@ -134,7 +143,7 @@
 <script lang="ts">
 import CardItem from "@/components/CardItem.vue";
 import { ElMessageBox } from "element-plus";
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, reactive, ref, watch } from "vue";
 
 export default defineComponent({
   components: { CardItem },
@@ -147,7 +156,10 @@ export default defineComponent({
       subject: [],
       className: "",
       description: "",
+      isapprove: false,
     });
+    // Thực hiện có mở form xác nhận hay không
+    const isConfirmDialog = ref(false);
     const ruleForm = ref(null);
     /**
      *  Quy chuẩn kiểm tra form
@@ -158,14 +170,12 @@ export default defineComponent({
         {
           required: true,
           message: "Không được để trống",
-          trigger: "blur",
         },
       ],
       subject: [
         {
           required: true,
           message: "Không được để trống",
-          trigger: "blur",
         },
       ],
       className: [
@@ -173,6 +183,11 @@ export default defineComponent({
           required: true,
           message: "Không được để trống",
           trigger: "blur",
+        },
+        {
+          required: true,
+          message: "Không được để trống",
+          trigger: "change",
         },
       ],
     });
@@ -217,17 +232,50 @@ export default defineComponent({
     //  * Theo dõi giá trị của khối và bộ môn để thay đổi giá trị tên lớp
     //  * CreatedBy : PQhieu(13/07/2021)
     //  */
-    // watchEffect(() => {
-    //   if (classInfo.grade) classInfo.className += "Khối " + classInfo.grade;
-    // });
-    // watchEffect(() => {
-    //   if (classInfo.subject.length > 0) {
-    //     classInfo.className += "," + subjectName.value;
-    //   }
-    // });
+    watch(
+      () => classInfo.grade,
+      () => {
+        classInfo.className = createClassName();
+      }
+    );
+    /**
+     * Theo dõi thay đổi giá trị của danh sách môn học
+     * CreatedBy: PQHieu(13/07/2021)
+     */
+    watch(
+      () => classInfo.subject,
+      () => {
+        classInfo.className = createClassName();
+      }
+    );
+    watch(classInfo, () => {
+      isConfirmDialog.value = true;
+    });
+    /**
+     *  Tự động tạo tên lớp dựa tên khối lớp và tên lớp
+     * CreatedBy: PQHieu(14/07/2021)
+     */
+    const createClassName = () => {
+      let newName = "";
+      // Nếu tên khối lớp được lựa chọn trước
+      newName += classInfo.grade; // gán giá trị khối lớp cho tên lớp nếu khối lớp đã được chọn
+      // thực hiện map giá trị của các môn học đã chọn thành tên lớp
+      if (classInfo.subject.length > 0) {
+        if (classInfo.grade) newName += " - "; // thêm dấu - nếu tên khối đã được chọn
+        for (let i = 0; i < classInfo.subject.length; i++) {
+          for (let j = 0; j < optionsSubject.value.length; j++) {
+            if (classInfo.subject[i] == optionsSubject.value[j].value) {
+              if (i != 0) newName += ", " + optionsSubject.value[j].label;
+              else newName += optionsSubject.value[j].label; // không đặt dấu , ở môn học đầu tiên được chọn
+            }
+          }
+        }
+      }
+      return newName;
+    };
 
     /**
-     * Thực hiện thay đổi thông tin lớp học
+     * Thực hiện chỉnh sửa thông tin lớp học
      * CreatedBy : PQHieu(13/07/2021)
      */
     const changeInfo = () => {
@@ -240,22 +288,27 @@ export default defineComponent({
      */
 
     const handleClose = (done: any) => {
-      ElMessageBox.confirm("Bạn có muốn lưu trước khi rời đi không?", {
-        title: "EMIS Ôn tập",
-        showClose: false,
-        dangerouslyUseHTMLString: true,
-        confirmButtonText: "Lưu",
-        cancelButtonText: "Hủy",
-        closeOnClickModal: false,
-        confirmButtonClass: "btn--gradient btn-group-left",
-      })
-        .then(() => {
-          console.log("Done");
-          // done();
+      // Chỉ thực hiện mở form xác nhận khi isConfirmDialog = true
+      if (isConfirmDialog.value) {
+        ElMessageBox.confirm("Bạn có muốn lưu trước khi rời đi không?", {
+          title: "EMIS Ôn tập",
+          showClose: false,
+          dangerouslyUseHTMLString: true,
+          confirmButtonText: "Lưu",
+          cancelButtonText: "Không lưu",
+          closeOnClickModal: false,
+          confirmButtonClass: "btn--gradient btn-group-left",
         })
-        .catch(() => {
-          done();
-        });
+          .then(() => {
+            console.log("Done");
+            // done();
+          })
+          .catch(() => {
+            done();
+          });
+      } else {
+        done();
+      }
     };
     /**
      * Bắt sự kiện khi close dialog
@@ -269,6 +322,8 @@ export default defineComponent({
         className: "",
         description: "",
       });
+      // Thực hiện đặt lại kiểm tra có mở form xác nhận không
+      isConfirmDialog.value = false;
     };
     /**
      * Thực hiện lưu dữ liệu
@@ -294,19 +349,6 @@ export default defineComponent({
       ruleForm,
       handleSave,
     };
-  },
-  methods: {
-    /**
-     * Thự hiện validate khi Submit
-     * CreatedBy : PQhieu(13/07/2021)
-     */
-    // handleSave() {
-    //   this.$refs.ruleForm.validate((valid: any) => {
-    //     if (valid) {
-    //       console.log("true");
-    //     }
-    //   });
-    // },
   },
 });
 </script>
@@ -353,10 +395,11 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
 }
-.content-left {
+.dialog-content {
   width: 221px;
   margin-right: 24px;
 }
+
 .image-container {
   border-radius: 10px;
   border: 1px solid rgb(182, 185, 206);
@@ -378,7 +421,7 @@ export default defineComponent({
 }
 .row-2 .input-container:nth-child(1) {
   margin-right: 12px;
-  width: 33.33333%;
+  width: calc(33.33333% + 12px);
 }
 .row-2 .input-container:nth-child(2) {
   flex: 1;

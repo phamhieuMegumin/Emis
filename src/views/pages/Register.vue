@@ -17,7 +17,7 @@
           <el-form :model="userAccount" :rules="rules">
             <!-- Bắt đầu Input userName -->
             <div class="row-input row-2">
-              <el-form-item prop="username">
+              <el-form-item prop="fullName">
                 <el-input
                   placeholder="Họ và tên"
                   v-model="userAccount.fullName"
@@ -38,10 +38,10 @@
             <!-- Kết thúc input UserName -->
             <!-- Bắt đầu input PhoneNumber -->
             <div class="row-input">
-              <el-form-item prop="password">
+              <el-form-item prop="phoneNumber">
                 <el-input
                   placeholder="Nhập số điện thoại"
-                  v-model="userAccount.password"
+                  v-model="userAccount.phoneNumber"
                   autocomplete="off"
                 >
                   <template #prefix>
@@ -59,10 +59,10 @@
             <!-- kết thúc input PhoneNumber -->
             <!-- Bắt đầu input Email -->
             <div class="row-input">
-              <el-form-item prop="password">
+              <el-form-item prop="email">
                 <el-input
                   placeholder="Nhập email (Không bắt buộc)"
-                  v-model="userAccount.password"
+                  v-model="userAccount.email"
                 >
                   <template #prefix>
                     <div class="input-prefix-icon">
@@ -102,7 +102,9 @@
           </el-form>
 
           <div class="row">
-            <el-button class="btn--gradient btn-100">Đăng ký</el-button>
+            <el-button class="btn--gradient btn-100" @click="handleSubmit"
+              >Đăng ký</el-button
+            >
           </div>
         </div>
         <!-- Kết thúc form input -->
@@ -130,6 +132,7 @@ import Notification from "../../uses/Notification";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import User from "../../types/User";
+import AuthManager from "../../uses/Auth";
 // import { useStore } from "vuex";
 export default defineComponent({
   setup() {
@@ -138,7 +141,7 @@ export default defineComponent({
      * CreatedBy : PQhieu(12/07/2021)
      */
     const rules = reactive({
-      username: [
+      fullName: [
         {
           required: true,
           message: "Không được để trống",
@@ -152,6 +155,18 @@ export default defineComponent({
           trigger: "blur",
         },
       ],
+      phoneNumber: [
+        {
+          required: true,
+          message: "Không được để trống",
+          trigger: "blur",
+        },
+      ],
+      email: [
+        {
+          required: false,
+        },
+      ],
     });
     /**
      * Thông tin account
@@ -163,6 +178,7 @@ export default defineComponent({
       email: "",
       phoneNumber: "",
     });
+    const { handleRegister } = AuthManager();
     // const store = useStore();
     const { successNotify, ErrorNotify } = Notification();
     const router = useRouter();
@@ -171,8 +187,12 @@ export default defineComponent({
     const handleBackLogin = () => {
       router.push("/login");
     };
+    /**
+     * Thực hiện đăng ký tài khoản người dùng
+     * CreatedBy: PQhieu(18/07/2021)
+     */
     const handleSubmit = () => {
-      register();
+      handleRegister(userAccount);
     };
     const register = async () => {
       try {

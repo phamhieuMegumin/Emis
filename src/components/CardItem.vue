@@ -31,6 +31,7 @@
           :width="200"
           trigger="click"
           :show-arrow="false"
+          :offset="-10"
         >
           <div class="popover-option-container">
             <div class="option-item" @click="handleChangeinfo">
@@ -156,7 +157,7 @@ export default defineComponent({
   position: absolute;
   width: 36px;
   height: 40px;
-  padding: 8px 4px 0 0;
+  margin: 8px 4px 0 0;
   top: 0;
   right: 0;
   cursor: pointer;

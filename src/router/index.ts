@@ -33,7 +33,7 @@ const routes: Array<RouteRecordRaw> = [
       classRoom : Classroom
     },
     meta : {
-      isAuthetication : false
+      isAuthetication : true
     }
   },
 ]
